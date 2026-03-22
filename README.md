@@ -6,12 +6,20 @@
 ![Version](https://img.shields.io/badge/version-1.0.0-blue)
 ![License](https://img.shields.io/badge/license-mixed-lightgrey)
 
-**Splendor Online** is a browser-based multiplayer implementation of the Splendor board game. This repository is a **monorepo** with a **React + Vite** client and an **Express + Socket.io + Prisma** server.
+**Splendor Online** is a browser-based multiplayer implementation of the Splendor board game. This repository is the **parent** layout: **`front-end/`** and **`back-end/`** are [Git submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules) pointing to [`splendor-client`](https://github.com/Masniper/splendor-client) and [`splendor-server`](https://github.com/Masniper/splendor-server).
 
-| Package | Path | Description |
-|---------|------|-------------|
-| **Frontend** | [`front-end/`](./front-end) | React 19 UI, real-time gameplay, room chat, procedural audio |
-| **Backend** | [`back-end/`](./back-end) | REST API, JWT auth, Socket.io rooms & game sync, SQLite/Prisma |
+Clone with submodules:
+
+```bash
+git clone --recurse-submodules https://github.com/Masniper/splendor-app.git
+# or, after a plain clone:
+git submodule update --init --recursive
+```
+
+| Package | Path | Upstream repo |
+|---------|------|----------------|
+| **Frontend** | [`front-end/`](./front-end) | [Masniper/splendor-client](https://github.com/Masniper/splendor-client) |
+| **Backend** | [`back-end/`](./back-end) | [Masniper/splendor-server](https://github.com/Masniper/splendor-server) |
 
 ---
 
