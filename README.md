@@ -45,9 +45,9 @@
 |------|----------------|
 | **Frontend** | React 19, Vite 6, Tailwind CSS v4, Framer Motion, Socket.io client, React Router, PWA |
 | **Backend** | Node.js, Express 5, Socket.io, Prisma, Zod, JWT, bcrypt |
-| **Database** | SQLite (default); Prisma schema can target PostgreSQL |
+| **Database** | **PostgreSQL** (Prisma); Docker Compose ships Postgres 16 with a named volume |
 | **Tooling** | TypeScript, Vitest (backend tests) |
-| **Infrastructure** | Three GitHub repositories; this repo composes client + server via **submodules** (see [`.gitmodules`](./.gitmodules)) |
+| **Infrastructure** | Three GitHub repositories + **submodules** ([`.gitmodules`](./.gitmodules)); **Docker Compose** (multi-stage API + Nginx static UI + Postgres) |
 
 ---
 
@@ -85,11 +85,19 @@ Use the same `npm install` / `npm run dev` steps below inside the respective fol
 
 ### 1. Backend
 
+You need a running **PostgreSQL** instance and `DATABASE_URL` (see [Environment variables](#environment-variables)). Quick option: start only the database from this repo’s Compose file:
+
+```bash
+docker compose up -d postgres
+```
+
+Then:
+
 ```bash
 cd back-end
 npm install
-# Create .env — see Environment variables below and back-end README
-npx prisma migrate dev   # or prisma db push — see back-end README
+# Create .env with DATABASE_URL and JWT_SECRET — see below
+npx prisma migrate dev
 npm run dev
 ```
 
@@ -134,14 +142,14 @@ Do **not** commit real secrets. Use placeholders in examples.
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `DATABASE_URL` | **Yes** | Prisma connection string. Local SQLite example: `file:./dev.db` |
+| `DATABASE_URL` | **Yes** | Prisma **PostgreSQL** URL, e.g. `postgresql://USER:PASSWORD@localhost:5432/splendor?schema=public` |
 | `JWT_SECRET` | Strongly recommended | Secret for signing/verifying JWTs; use a long random string in production |
 | `PORT` | No | HTTP and Socket.io port (default: `5001`) |
 
 Example:
 
 ```env
-DATABASE_URL="file:./dev.db"
+DATABASE_URL="postgresql://splendor:splendor@localhost:5432/splendor?schema=public"
 JWT_SECRET="change-me-to-a-long-random-secret"
 PORT=5001
 ```
@@ -157,11 +165,38 @@ More detail: [`back-end/README.md`](./back-end/README.md), [`front-end/README.md
 
 ---
 
+## Docker (full stack)
+
+From the **parent** directory (with submodules checked out). Requires [Docker](https://docs.docker.com/get-docker/) and Docker Compose v2.
+
+1. Copy environment template and set a strong `JWT_SECRET`:
+
+   ```bash
+   cp .env.example .env
+   # edit .env — set JWT_SECRET (required for Compose)
+   ```
+
+2. Build and start **Postgres**, **API**, and **Nginx** (static client with reverse proxy to the API):
+
+   ```bash
+   docker compose up --build -d
+   ```
+
+3. Open the app at **`http://localhost:8080`** (or the host port you set in `WEB_PORT` in `.env`).
+
+The client is built with default Vite env (**same-origin** `/api` and Socket.io), matching the Nginx routes in `front-end/nginx.docker.conf`. Swagger UI is proxied at **`/api-docs`**.
+
+Persisted data: Docker volume **`postgres_data`**.
+
+---
+
 ## Project structure
 
 ```
 splendor-app/                 # Parent (this repo)
 ├── .gitmodules               # Submodule URLs for client + server
+├── docker-compose.yml        # Postgres + API + web (Nginx)
+├── .env.example              # Template for Docker Compose secrets
 ├── README.md
 ├── .gitignore
 ├── front-end/                # → submodule: splendor-client

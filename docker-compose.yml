@@ -1,0 +1,44 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: splendor
+      POSTGRES_PASSWORD: splendor
+      POSTGRES_DB: splendor
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U splendor -d splendor"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  api:
+    build:
+      context: ./back-end
+      dockerfile: Dockerfile
+    environment:
+      NODE_ENV: production
+      PORT: "5001"
+      DATABASE_URL: postgresql://splendor:splendor@postgres:5432/splendor?schema=public
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env or the environment}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    expose:
+      - "5001"
+    restart: unless-stopped
+
+  web:
+    build:
+      context: ./front-end
+      dockerfile: Dockerfile
+    ports:
+      - "${WEB_PORT:-8080}:80"
+    depends_on:
+      - api
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
