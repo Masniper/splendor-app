@@ -1,7 +1,7 @@
 # Splendor Online
 
 <p align="center">
-  <img src="./front-end/public/images/startup-bg.jpg" alt="Splendor Online cover" width="720" />
+  <img src="https://raw.githubusercontent.com/Masniper/splendor-client/main/public/images/startup-bg.jpg" alt="Splendor Online cover" width="720" />
 </p>
 
 <p align="center">
