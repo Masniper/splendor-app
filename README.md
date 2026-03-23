@@ -162,7 +162,6 @@ Copy [`.env.example`](./.env.example) to `.env` next to `docker-compose.yml`.
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `JWT_SECRET` | **Yes** | Secret passed into the API container; must be a long random string |
-| `PROVIDER` | **Yes** | Prisma datasource provider (default: `postgresql`) |
 | `WEB_PORT` | No | Host port for the Nginx web container (default: `8080`) |
 
 ### Backend (`back-end/.env`)
@@ -170,7 +169,6 @@ Copy [`.env.example`](./.env.example) to `.env` next to `docker-compose.yml`.
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `DATABASE_URL` | **Yes** | Prisma PostgreSQL URL, e.g. `postgresql://USER:PASSWORD@localhost:5432/splendor?schema=public` |
-| `PROVIDER` | **Yes** | Prisma datasource provider (e.g. `postgresql`), used by `prisma/schema.prisma` |
 | `JWT_SECRET` | Strongly recommended | JWT signing secret |
 | `PORT` | No | HTTP and Socket.io port (default: `5001`) |
 
@@ -178,7 +176,6 @@ Example:
 
 ```env
 DATABASE_URL="postgresql://splendor:splendor@localhost:5432/splendor?schema=public"
-PROVIDER="postgresql"
 JWT_SECRET="change-me-to-a-long-random-secret"
 PORT=5001
 ```
